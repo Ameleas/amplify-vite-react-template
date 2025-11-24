@@ -1,5 +1,8 @@
-import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { type ClientSchema, a, defineData, defineFunction } from "@aws-amplify/backend";
 
+const iotCoreHandler = defineFunction({
+  entry: '/iot-core-handler/handler.ts'
+})
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
 adding a new "isDone" field as a boolean. The authorization rule below
@@ -8,10 +11,18 @@ specifies that any user authenticated via an API key can "create", "read",
 =========================================================================*/
 const schema = a.schema({
   Todo: a
+  .model({
+    content: a.string(),
+  })
+  .authorization((allow) => [allow.owner()]),
+  Devices: a
     .model({
-      content: a.string(),
+      device_id: a.string().required(),
+      owner: a.string().required(),
+      status: a.string(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .identifier(['device_id'])
+    .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

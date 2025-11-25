@@ -1,7 +1,7 @@
 import { type ClientSchema, a, defineData, defineFunction } from "@aws-amplify/backend";
 
   const iotCoreHandler = defineFunction({
-  entry: '/iot-core-handler/handler.ts'
+  entry: '/iotCoreHandler/handler.ts'
 })
 
 /*== STEP 1 ===============================================================

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import './App.css';
 import { 
   Badge, 
   Button, 
@@ -11,9 +12,33 @@ import {
   Heading, 
   useAuthenticator, 
   View,
-  Text
+  Text,
+  Menu,
+  MenuItem,
+  MenuButton
 } from '@aws-amplify/ui-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+// Registrera Chart.js komponenter
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const client = generateClient<Schema>();
 
@@ -22,6 +47,7 @@ function App() {
   const [devices, setDevices] = useState<Array<Schema["Devices"]["type"]>>([]);
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [telemetryData, setTelemetryData] = useState<Array<Schema["Telemetry"]["type"]>>([]);
+  const[timeRange, setTimeRange] = useState<'hour' | 'week' | 'all'>('all');
 
   useEffect(() => {
     client.models.Devices.observeQuery().subscribe({
@@ -40,16 +66,28 @@ function App() {
             eq: selectedDevice
           }
         },
-        limit: 100
+        limit: 10000
       }).then(response => {
         // Sortera efter timestamp
         const sortedData = [...response.data].sort((a, b) => 
           (a.timestamp || 0) - (b.timestamp || 0)
         );
-        setTelemetryData(sortedData);
+
+        //Filtrera baserat på vald tidsram
+        const now = Date.now();
+        let filteredData = sortedData;
+
+        if (timeRange === 'hour') {
+          const oneHourAgo = now - (60 * 60 * 1000);
+          filteredData = sortedData.filter(item => (item.timestamp || 0) >= oneHourAgo);
+        } else if (timeRange === 'week') {
+          const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
+          filteredData = sortedData.filter(item => (item.timestamp || 0) >= oneWeekAgo);
+        }
+        setTelemetryData(filteredData);
       });
     }
-  }, [selectedDevice]);
+  }, [selectedDevice, timeRange]);
 
   function createDevice() {
     const device = String(window.prompt("Device ID"));
@@ -66,17 +104,93 @@ function App() {
     }
   }
 
-  // Formatera data för grafen
-  const chartData = telemetryData.map(item => ({
-    time: new Date(item.timestamp || 0).toLocaleString('sv-SE', { 
+  // Formatera labels för X-axeln
+  const chartLabels = telemetryData.map(item => 
+    new Date(item.timestamp || 0).toLocaleString('sv-SE', { 
       month: 'short', 
       day: 'numeric', 
       hour: '2-digit',
       minute: '2-digit'
-    }),
-    temperature: item.temperature,
-    humidity: item.humidity// ? item.humidity / 10 : null, // Skala ner för läsbarhet
-  }));
+    })
+  );
+
+  // Temperatur data
+  const temperatureData = {
+    labels: chartLabels,
+    datasets: [
+      {
+        label: 'Temperature (°C)',
+        data: telemetryData.map(item => item.temperature),
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.1
+      }
+    ]
+  };
+
+  const humidityData = {
+    labels: chartLabels,
+    datasets: [
+      {
+        label: 'Humidity (%)',
+        data: telemetryData.map(item => item.humidity),
+        borderColor: 'rgb(153, 102, 255)',
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        tension: 0.1
+      }
+    ] 
+  };
+
+  // Vind data
+  //const windData = {
+  //  labels: chartLabels,
+  //  datasets: [
+  //    {
+  //      label: 'Wind Speed (m/s)',
+  //      data: telemetryData.map(item => item.wind_speed),
+  //      borderColor: 'rgb(54, 162, 235)',
+  //      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+  //      tension: 0.1
+  //    },
+  //    {
+  //      label: 'Wind Gust Max (m/s)',
+  //      data: telemetryData.map(item => item.wind_gust_max),
+  //      borderColor: 'rgb(255, 99, 132)',
+  //      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+  //      tension: 0.1
+  //    }
+  //  ]
+  //};
+
+  // Sikt data
+  //const visibilityData = {
+  //  labels: chartLabels,
+  //  datasets: [
+  //    {
+  //      label: 'Visibility (km/10)',
+  //      data: telemetryData.map(item => item.visibility ? item.visibility / 10 : null),
+  //      borderColor: 'rgb(255, 206, 86)',
+  //      backgroundColor: 'rgba(255, 206, 86, 0.2)',
+  //      tension: 0.1
+  //    }
+  //  ]
+  //};
+
+  // Chart options
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: false
+      }
+    }
+  };
 
   return (
     <View className="App">
@@ -114,12 +228,41 @@ function App() {
                     <Text><strong>ID:</strong> {item.device_id}</Text>
                   </Flex>
                   <Flex gap="0.5rem">
-                    <Button 
-                      onClick={() => setSelectedDevice(item.device_id)}
-                      variation={selectedDevice === item.device_id ? "primary" : undefined}
+                    <Menu
+                      menuAlign="end"
+                      trigger={
+                        <MenuButton 
+                          variation={selectedDevice === item.device_id ? "primary" : undefined}
+                        >
+                          {selectedDevice === item.device_id ? "Selected" : "View Data"}
+                        </MenuButton>
+                      }
                     >
-                      {selectedDevice === item.device_id ? "Selected" : "View Data"}
-                    </Button>
+                      <MenuItem 
+                        onClick={() => {
+                          setSelectedDevice(item.device_id);
+                          setTimeRange('hour');
+                        }}
+                      >
+                        Last Hour
+                      </MenuItem>
+                      <MenuItem 
+                        onClick={() => {
+                          setSelectedDevice(item.device_id);
+                          setTimeRange('week');
+                        }}
+                      >
+                        Last Week
+                      </MenuItem>
+                      <MenuItem 
+                        onClick={() => {
+                          setSelectedDevice(item.device_id);
+                          setTimeRange('all');
+                        }}
+                      >
+                        All Data
+                      </MenuItem>
+                    </Menu>
                     <Button onClick={() => deleteDevice(item.device_id)} variation="destructive">
                       Delete
                     </Button>
@@ -132,51 +275,32 @@ function App() {
 
         {selectedDevice && (
           <Card variation="outlined" marginTop="2rem">
-            <Heading level={3}>Weather Data - Device {selectedDevice}</Heading>
+            <Flex direction="row" justifyContent="space-between" alignItems="center">
+              <Heading level={3}>Weather Data - Device {selectedDevice}</Heading>
+              <Badge size="large">
+                {timeRange === 'hour' ? 'Last Hour' : timeRange === 'week' ? 'Last Week' : 'All Data'}
+              </Badge>
+            </Flex>
             <Divider marginTop="1rem" marginBottom="1rem" />
+
             
             {telemetryData.length > 0 ? (
               <>
                 {/* Temperatur Graf */}
                 <View marginBottom="2rem">
                   <Heading level={5}>Temperature (°C)</Heading>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="time" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="temperature" 
-                        stroke="#8884d8" 
-                        name="Temperature (°C)"
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <div style={{ height: '300px' }}>
+                    <Line data={temperatureData} options={chartOptions} />
+                  </div>
                 </View>
 
-                {/* Vind Graf */}
+                
+                {/* Luftfuktighet Graf */}
                 <View marginBottom="2rem">
                   <Heading level={5}>Humidity (%)</Heading>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="time" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="humidity" 
-                        stroke="#82ca9d" 
-                        name="Humidity (%)"
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <div style={{ height: '300px' }}>
+                    <Line data={humidityData} options={chartOptions} />
+                  </div>
                 </View>
 
                 <Text marginTop="1rem">
@@ -186,6 +310,11 @@ function App() {
             ) : (
               <Text>No telemetry data available for this device.</Text>
             )}
+            <Divider marginTop="2rem" marginBottom="1rem" />
+            <Button onClick={() => setSelectedDevice(null)}
+              variation="link"
+            >Back to Devices
+              </Button>
           </Card>
         )}
 
@@ -195,7 +324,7 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
 
 /*import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";

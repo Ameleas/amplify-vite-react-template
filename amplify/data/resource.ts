@@ -27,25 +27,40 @@ const schema = a.schema({
       timestamp: a.timestamp().required(),
       temperature: a.float(),
       humidity: a.float(),
+      light: a.float(),
       owner: a.string().required()
     })
     //.identifier(['device_id'])
     .identifier(['device_id', 'timestamp'])
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 
-    AddTelemetry: a
-    .mutation()
-    .arguments({
+  AddTelemetry: a
+  .mutation()
+  .arguments({
+    device_id: a.string().required(),
+    timestamp: a.timestamp().required(),
+    temperature: a.float(),
+    humidity: a.float(),
+    light: a.float(),
+    owner: a.string().required()
+  })
+  .returns(a.ref("Telemetry"))
+  .authorization((allow) => [allow.publicApiKey()])
+  .handler(a.handler.function(iotCoreHandler)),
+
+  SMHI: a
+    .model({
       device_id: a.string().required(),
       timestamp: a.timestamp().required(),
       temperature: a.float(),
-      humidity: a.float(),
+      windDirection: a.float(),
+      windSpeed: a.float(),
+      windGust: a.float(),
+      visibility: a.float(),
       owner: a.string().required()
-    }
-    )
-    .returns(a.ref("Telemetry"))
-    .authorization((allow) => [allow.publicApiKey()])
-    .handler(a.handler.function(iotCoreHandler)),
+    })
+    .identifier(['device_id', 'timestamp'])
+    .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 });
 
 

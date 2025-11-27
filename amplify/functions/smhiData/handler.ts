@@ -51,9 +51,9 @@ export const handler: Handler = async (event, context) => {
         const results = await Promise.all(fetchPromises);
         
         // Bygg item-objektet med all data
-        const telemetryData: any = {
+        const smhiData: any = {
             device_id: STATION_ID,
-            device_type: "weatherStation",
+            device_type: "SMHI_Station",
             name: "Svenska Högarna"
         };
 
@@ -61,25 +61,25 @@ export const handler: Handler = async (event, context) => {
             if (data && data.value && data.value.length > 0) {
                 const latestValue = data.value[0];
                 
-                if (!telemetryData.timestamp) {
-                    telemetryData.timestamp = latestValue.date;
+                if (!smhiData.timestamp) {
+                    smhiData.timestamp = latestValue.date;
                 }
                 
                 switch(key) {
                     case 'temperature':
-                        telemetryData.temperature = parseFloat(latestValue.value);
+                        smhiData.temperature = parseFloat(latestValue.value);
                         break;
                     case 'windDirection':
-                        telemetryData.wind_direction = parseFloat(latestValue.value);
+                        smhiData.wind_direction = parseFloat(latestValue.value);
                         break;
                     case 'windSpeed':
-                        telemetryData.wind_speed = parseFloat(latestValue.value);
+                        smhiData.wind_speed = parseFloat(latestValue.value);
                         break;
                     case 'windGust':
-                        telemetryData.wind_gust_max = parseFloat(latestValue.value);
+                        smhiData.wind_gust_max = parseFloat(latestValue.value);
                         break;
                     case 'visibility':
-                        telemetryData.visibility = parseFloat(latestValue.value);
+                        smhiData.visibility = parseFloat(latestValue.value);
                         break;
                 }
                 
@@ -87,7 +87,7 @@ export const handler: Handler = async (event, context) => {
             }
         });
 
-        console.log("Combined weather data:", telemetryData);
+        console.log("Combined weather data:", smhiData);
 
         // Kontrollera om enheten finns och hämta owner
         request = new Request(GRAPHQL_ENDPOINT, {
@@ -119,14 +119,14 @@ export const handler: Handler = async (event, context) => {
                 body: JSON.stringify({
                     query: `mutation MyMutation {
                         createTelemetry(input: {
-                            device_id: "${telemetryData.device_id}",
-                            temperature: ${telemetryData.temperature},
-                            wind_direction: ${telemetryData.wind_direction},
-                            wind_speed: ${telemetryData.wind_speed},
-                            wind_gust_max: ${telemetryData.wind_gust_max},
-                            visibility: ${telemetryData.visibility},
+                            device_id: "${smhiData.device_id}",
+                            temperature: ${smhiData.temperature},
+                            wind_direction: ${smhiData.wind_direction},
+                            wind_speed: ${smhiData.wind_speed},
+                            wind_gust_max: ${smhiData.wind_gust_max},
+                            visibility: ${smhiData.visibility},
                             owner: "${responseBody.data.getDevices.owner}",
-                            timestamp: ${telemetryData.timestamp}
+                            timestamp: ${smhiData.timestamp}
                         }) {
                             device_id
                             temperature

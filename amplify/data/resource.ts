@@ -30,7 +30,6 @@ const schema = a.schema({
       light: a.float(),
       owner: a.string().required()
     })
-    //.identifier(['device_id'])
     .identifier(['device_id', 'timestamp'])
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 
@@ -55,7 +54,7 @@ const schema = a.schema({
       temperature: a.float(),
       wind_direction: a.float(),
       wind_speed: a.float(),
-      wind_gust: a.float(),
+      wind_gust_max: a.float(),
       visibility: a.float(),
       owner: a.string().required()
     })

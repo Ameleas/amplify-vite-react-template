@@ -53,9 +53,9 @@ const schema = a.schema({
       device_id: a.string().required(),
       timestamp: a.timestamp().required(),
       temperature: a.float(),
-      windDirection: a.float(),
-      windSpeed: a.float(),
-      windGust: a.float(),
+      wind_direction: a.float(),
+      wind_speed: a.float(),
+      wind_gust: a.float(),
       visibility: a.float(),
       owner: a.string().required()
     })

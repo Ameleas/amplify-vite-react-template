@@ -5,7 +5,10 @@ const GRAPHQL_API_KEY = process.env.API_KEY as string;
 const AMPLIFY_SSM_ENV_CONFIG = process.env.AMPLIFY_SSM_ENV_CONFIG as string;
 
 // SMHI parametrar för Svenska Högarna (station 99280)
-const STATION_ID = "99280";
+// Ta emot station från GraphQL-resolvern
+const INPUT_STATION_ID = (Event?.arguments?.stationId as string) || "99280";
+const STATION_ID = INPUT_STATION_ID;
+
 const PARAMETERS = {
   temperature: "1",
   windDirection: "3",

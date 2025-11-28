@@ -31,7 +31,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-// Registrera Chart.js
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -58,15 +58,17 @@ export default function App() {
 
         {/* ----------- STARTMENY ----------- */}
         {view === 'menu' && (
-          <Card variation="outlined" marginTop="2rem">
-            <Heading level={3}>Select Data Source</Heading>
-            <Divider marginTop="1rem" marginBottom="1rem"/>
+          <Flex justifyContent="center" width="100%">
+            <Card variation="outlined" marginTop="2rem">
+              <Heading level={3}>Select Data Source</Heading>
+              <Divider marginTop="1rem" marginBottom="2rem"/>
 
-            <Flex direction="column" gap="1rem">
-              <Button onClick={() => setView('devices')}>Devices</Button>
-              <Button onClick={() => setView('smhi')}>SMHI</Button>
-            </Flex>
-          </Card>
+              <Flex direction="column" gap="2rem">
+                <Button onClick={() => setView('devices')}>Devices</Button>
+                <Button onClick={() => setView('smhi')}>SMHI</Button>
+              </Flex>
+            </Card>
+          </Flex>
         )}
 
         {/* ----------- DEVICES VIEW ----------- */}
@@ -270,6 +272,37 @@ function DevicesView({ onBack }: { onBack: () => void }) {
 /* ============================================================
    SMHI VIEW
    ============================================================ */
+
+function WindDirectionCompass({ direction }: { direction: number }) {
+  return (
+    <div style={{
+      width: 120,
+      height: 120,
+      borderRadius: "50%",
+      border: "3px solid #444",
+      position: "relative",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      marginLeft: "2rem"
+    }}>
+      {/* Pil */}
+      <div style={{
+        width: 0,
+        height: 0,
+        borderLeft: "2px solid transparent",
+        borderRight: "2px solid transparent",
+        borderBottom: "80px solid red",
+        position: "absolute",
+        transform: `rotate(${direction}deg)`,
+      }} />
+      <div style={{ position: "absolute", bottom: 4, fontSize: 12 }}>S</div>
+      <div style={{ position: "absolute", top: 4, fontSize: 12 }}>N</div>
+      <div style={{ position: "absolute", left: 4, fontSize: 12 }}>W</div>
+      <div style={{ position: "absolute", right: 4, fontSize: 12 }}>E</div>
+    </div>
+  );
+}
 
 function SmhiView({ onBack }: { onBack: () => void }) {
   const [stationId, setStationId] = useState('99280');
@@ -488,29 +521,48 @@ function SmhiView({ onBack }: { onBack: () => void }) {
           </Flex>
           <Divider marginTop="1rem" marginBottom="1rem"/>
 
+          <Flex direction="row" gap="2rem" wrap="wrap">
+
           {/* Temperatur */}
-          <View marginBottom="2rem">
+          <View style={{ flex: 1, minWidth: "300px" }}>
             <Heading level={5}>Temperature (°C)</Heading>
-            <div style={{ height: "300px" }}>
+            <div style={{ height: "260px" }}>
               <Line data={temperatureData} options={chartOptions} />
             </div>
           </View>
 
+           {/* Sikt */}
+          <View style={{ flex: 1, minWidth: "300px" }}>
+            <Heading level={5}>Visibility (km)</Heading>
+            <div style={{ height: "260px" }}>
+              <Line data={visibilityData} options={chartOptions} />
+            </div>
+          </View>
+       
+          </Flex>
+
+          <Divider marginTop="2rem" marginBottom="1rem"/>
+
+          <Flex direction="row" gap="2rem" alignItems="center" wrap="wrap">
+
           {/* Vind */}
-          <View marginBottom="2rem">
-            <Heading level={5}>Wind Speed (m/s)</Heading>
+          <View style={{ flex: 3, minWidth: "400px" }}>
+            <Heading level={5}>Wind Speed & Gusts (m/s)</Heading>
             <div style={{ height: "300px" }}>
               <Line data={windData} options={chartOptions} />
             </div>
           </View>
 
-          {/* Sikt */}
-          <View>
-            <Heading level={5}>Visibility (km)</Heading>
-            <div style={{ height: "300px" }}>
-              <Line data={visibilityData} options={chartOptions} />
-            </div>
-          </View>
+          {/* Vindriktning-kompass */}
+          <View style={{ flex: 1 }}>
+            {latestData && (
+              <>
+                <Heading level={5}>Wind Direction</Heading>
+                <WindDirectionCompass direction={latestData.wind_direction || 0} />
+              </>
+            )}
+            </View>
+          </Flex>
         </Card>
       )}
 

@@ -73,11 +73,13 @@ export const handler: Handler = async (event, context) => {
                         temperature: ${event.temperature}, 
                         owner: "${responseBody.data.getDevices.owner}", 
                         humidity: ${event.humidity}, 
+                        light: ${event.light},
                         timestamp: ${event.timestamp}
                         }) 
                     {
                         temperature
                         humidity
+                        light
                         owner
                         createdAt
                         updatedAt

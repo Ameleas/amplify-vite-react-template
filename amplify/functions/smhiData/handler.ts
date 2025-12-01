@@ -2,7 +2,7 @@ import type { Handler } from 'aws-lambda';
 
 const GRAPHQL_ENDPOINT = process.env.API_ENDPOINT as string;
 const GRAPHQL_API_KEY = process.env.API_KEY as string;
-//const AMPLIFY_SSM_ENV_CONFIG = process.env.AMPLIFY_SSM_ENV_CONFIG as string;
+const AMPLIFY_SSM_ENV_CONFIG = process.env.AMPLIFY_SSM_ENV_CONFIG as string;
 
 // SMHI parametrar för Svenska Högarna (station 99280)
 // Ta emot station från GraphQL-resolvern
@@ -19,7 +19,7 @@ export const handler: Handler = async (event, context) => {
     console.log(`EVENT: ${JSON.stringify(event)}`);
     console.log(`GRAPHQL_ENDPOINT: ${GRAPHQL_ENDPOINT}`);
     console.log(`GRAPHQL_API_KEY: ${GRAPHQL_API_KEY}`);
-    //console.log(`AMPLIFY_SSM_ENV_CONFIG: ${AMPLIFY_SSM_ENV_CONFIG}`);
+    console.log(`AMPLIFY_SSM_ENV_CONFIG: ${AMPLIFY_SSM_ENV_CONFIG}`);
 
     const INPUT_STATION_ID = (event?.arguments?.stationId as string) || "99280";
     const STATION_ID = INPUT_STATION_ID;
@@ -60,10 +60,10 @@ export const handler: Handler = async (event, context) => {
             if (data && data.value && data.value.length > 0) {
                 const latestValue = data.value[0];
                 
-                if (!smhiData.timestamp) {
-                    //konvertera till unix timestamp i sekunder
-                    smhiData.timestamp = Math.floor(latestValue.date/1000);
-                }
+                //if (!smhiData.timestamp) {
+                //    //konvertera till unix timestamp i sekunder
+                //    smhiData.timestamp = Math.floor(latestValue.date/1000);
+                //}
                 
                 switch(key) {
                     case 'temperature':

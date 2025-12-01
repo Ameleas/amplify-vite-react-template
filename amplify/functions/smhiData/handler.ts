@@ -2,7 +2,7 @@ import type { Handler } from 'aws-lambda';
 
 const GRAPHQL_ENDPOINT = process.env.API_ENDPOINT as string;
 const GRAPHQL_API_KEY = process.env.API_KEY as string;
-const AMPLIFY_SSM_ENV_CONFIG = process.env.AMPLIFY_SSM_ENV_CONFIG as string;
+//const AMPLIFY_SSM_ENV_CONFIG = process.env.AMPLIFY_SSM_ENV_CONFIG as string;
 
 // SMHI parametrar för Svenska Högarna (station 99280)
 // Ta emot station från GraphQL-resolvern
@@ -24,7 +24,7 @@ export const handler: Handler = async (event, context) => {
     console.log(`EVENT: ${JSON.stringify(event)}`);
     console.log(`GRAPHQL_ENDPOINT: ${GRAPHQL_ENDPOINT}`);
     console.log(`GRAPHQL_API_KEY: ${GRAPHQL_API_KEY}`);
-    console.log(`AMPLIFY_SSM_ENV_CONFIG: ${AMPLIFY_SSM_ENV_CONFIG}`);
+    //console.log(`AMPLIFY_SSM_ENV_CONFIG: ${AMPLIFY_SSM_ENV_CONFIG}`);
 
     let statusCode = 200;
     let response;
@@ -56,8 +56,6 @@ export const handler: Handler = async (event, context) => {
         // Bygg item-objektet med all data
         const smhiData: any = {
             device_id: STATION_ID,
-            device_type: "SMHI_Station",
-            name: "Svenska Högarna"
         };
 
         results.forEach(({ key, data }) => {
@@ -65,7 +63,8 @@ export const handler: Handler = async (event, context) => {
                 const latestValue = data.value[0];
                 
                 if (!smhiData.timestamp) {
-                    smhiData.timestamp = latestValue.date;
+                    //konvertera till unix timestamp i sekunder
+                    smhiData.timestamp = Math.floor(latestValue.date/1000);
                 }
                 
                 switch(key) {
@@ -121,7 +120,7 @@ export const handler: Handler = async (event, context) => {
                 headers: headers,
                 body: JSON.stringify({
                     query: `mutation MyMutation {
-                        createTelemetry(input: {
+                        createSMHI(input: {
                             device_id: "${smhiData.device_id}",
                             temperature: ${smhiData.temperature},
                             wind_direction: ${smhiData.wind_direction},

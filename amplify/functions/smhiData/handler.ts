@@ -60,10 +60,9 @@ export const handler: Handler = async (event, context) => {
             if (data && data.value && data.value.length > 0) {
                 const latestValue = data.value[0];
                 
-                //if (!smhiData.timestamp) {
-                //    //konvertera till unix timestamp i sekunder
-                //    smhiData.timestamp = Math.floor(latestValue.date/1000);
-                //}
+                if (!smhiData.timestamp) {
+                    smhiData.timestamp = latestValue.date;
+                }
                 
                 switch(key) {
                     case 'temperature':

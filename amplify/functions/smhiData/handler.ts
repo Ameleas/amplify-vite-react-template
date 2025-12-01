@@ -6,8 +6,6 @@ const GRAPHQL_API_KEY = process.env.API_KEY as string;
 
 // SMHI parametrar för Svenska Högarna (station 99280)
 // Ta emot station från GraphQL-resolvern
-const INPUT_STATION_ID = (Event?.arguments?.stationId as string) || "99280";
-const STATION_ID = INPUT_STATION_ID;
 
 const PARAMETERS = {
   temperature: "1",
@@ -17,14 +15,14 @@ const PARAMETERS = {
   visibility: "6"
 };
 
-/**
- * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
- */
 export const handler: Handler = async (event, context) => {
     console.log(`EVENT: ${JSON.stringify(event)}`);
     console.log(`GRAPHQL_ENDPOINT: ${GRAPHQL_ENDPOINT}`);
     console.log(`GRAPHQL_API_KEY: ${GRAPHQL_API_KEY}`);
     //console.log(`AMPLIFY_SSM_ENV_CONFIG: ${AMPLIFY_SSM_ENV_CONFIG}`);
+
+    const INPUT_STATION_ID = (event?.arguments?.stationId as string) || "99280";
+    const STATION_ID = INPUT_STATION_ID;
 
     let statusCode = 200;
     let response;

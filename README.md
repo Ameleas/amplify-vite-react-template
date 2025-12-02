@@ -20,17 +20,13 @@ DHT11 — Temperature & humidity sensor
 RGB Light sensor
 
 ## Software & Cloud Services
+
 AWS
-
-IoT Core – Secure device communication (MQTT + mTLS)
-
-Lambda – Serverless processing (multiple functions)
-
-DynamoDB – Hot storage for device telemetry and SMHI data
-
-S3 – Cold storage for long-term telemetry archiving
-
-Amplify (Gen 2) – Code-first fullstack framework & hosting
+- IoT Core – Secure device communication (MQTT + mTLS)
+- Lambda – Serverless processing (multiple functions)
+- DynamoDB – Hot storage for device telemetry and SMHI data
+- S3 – Cold storage for long-term telemetry archiving
+- Amplify (Gen 2) – Code-first fullstack framework & hosting
 
 ## Development Tools
 

@@ -146,7 +146,6 @@ function DevicesView({ onBack }: { onBack: () => void }) {
     if (selectedDevice === device_id) setSelectedDevice(null);
   }
 
-    // Om en device är vald, visa telemetri-vyn
   if (selectedDevice) {
     return (
       <View>
@@ -154,7 +153,7 @@ function DevicesView({ onBack }: { onBack: () => void }) {
           ← Back
         </Button>
 
-        <Card variation="outlined">
+        <Card variation="outlined" marginTop="1rem">
           <Heading level={3}>Telemetry – Device {selectedDevice}</Heading>
           <Divider marginTop="1rem" marginBottom="1rem"/>
 
@@ -168,7 +167,6 @@ function DevicesView({ onBack }: { onBack: () => void }) {
     );
   }
 
-  // Annars visa device-listan
   return (
     <View>
       <Button variation="link" onClick={onBack} marginBottom="1rem">
@@ -269,7 +267,7 @@ function TelemetryChart({ data }: { data: Array<Schema["Telemetry"]["type"]> }) 
       {
         label: "Light (%)",
         data: data.map(i => i.light),
-        borderColor: "rgba(253, 100, 12, 1)",
+        borderColor: "rgba(245, 201, 55, 1)",
         tension: 0.1,
       },
     ],
@@ -396,7 +394,6 @@ function SmhiView({ onBack }: { onBack: () => void }) {
     })
   );
 
-  // Temperatur data
   const temperatureData = {
     labels: chartLabels,
     datasets: [{
@@ -408,7 +405,6 @@ function SmhiView({ onBack }: { onBack: () => void }) {
     }]
   };
 
-  // Vind data
   const windData = {
     labels: chartLabels,
     datasets: [
@@ -429,7 +425,6 @@ function SmhiView({ onBack }: { onBack: () => void }) {
     ]
   };
 
-  // Sikt data
   const visibilityData = {
     labels: chartLabels,
     datasets: [{

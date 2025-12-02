@@ -149,10 +149,9 @@ function DevicesView({ onBack }: { onBack: () => void }) {
   if (selectedDevice) {
     return (
       <View>
-        <Button variation="link" onClick={() => setSelectedDevice(null)} marginBottom="2rem">
+        <Button variation="link" onClick={() => setSelectedDevice(null)} marginTop= "5rem" marginBottom="3rem">
           ← Back
         </Button>
-
         <Card variation="outlined" marginTop="1rem">
           <Heading level={3}>Telemetry – Device {selectedDevice}</Heading>
           <Divider marginTop="1rem" marginBottom="1rem"/>

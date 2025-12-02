@@ -58,57 +58,40 @@ The system is divided into separate serverless Lambda functions, each responsibl
 
 Amplify handles:
 
-Automated creation of DynamoDB tables
-
-Deployment of Lambda functions
-
-Frontend hosting
-
-Static file distribution
-
-API routes and permissions
+- Automated creation of DynamoDB tables
+- Deployment of Lambda functions
+- Frontend hosting
+- Static file distribution
+- API routes and permissions
 
 When the Amplify project is deployed, the following DynamoDB tables are automatically created via amplify/data/resources.ts:
 
 Devices
-
 Telemetry
-
 SMHI
 
 Lambda functions are created from your code in amplify/functions/.../handler.ts.
 To connect a Lambda to a DynamoDB table, additional configuration is set in AWS after deployment.
-
 Despite the initial learning curve, Amplify’s code-first approach makes it possible to build full cloud applications with minimal configuration.
 
 ## Security
 
 All IoT communication uses MQTT with mutual TLS authentication (mTLS).
-
 AWS IoT Core uses MFA-protected login.
-
 IAM Policies restrict device and user access.
-
 Every user session is stored with a unique owner identifier, ensuring data separation.
-
 All traffic is encrypted end-to-end.
 
 ## Scalability
 
 This system is built to scale horizontally:
-
 Users
-
-You can onboard unlimited users.
-Amplify manages authentication and per-user data ownership automatically.
-
+- You can onboard unlimited users.
+  Amplify manages authentication and per-user data ownership automatically.
 Weather Stations
-
-The SMHI integration can easily be extended to collect data from multiple stations and allow users to choose which station to view.
-
+- The SMHI integration can easily be extended to collect data from multiple stations and allow users to choose which station to view.
 Devices
-
-New IoT devices can be added in IoT Core and linked to new or existing users, each with its own telemetry.
+- New IoT devices can be added in IoT Core and linked to new or existing users, each with its own telemetry.
 
 ## Images
 

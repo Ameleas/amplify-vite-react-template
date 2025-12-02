@@ -52,12 +52,14 @@ export default function App() {
 
   return (
     <View className="App">
-      <Flex direction="column" padding="2rem">
+      <Flex direction="column" padding="2rem"
+      style={{width: "100%", alignItems: "center"}}>
 
         <Heading level={1}>Welcome {user?.signInDetails?.loginId}</Heading>
 
         {/* ----------- STARTMENY ----------- */}
         {view === 'menu' && (
+          <div className="page-conainer">
           <Flex justifyContent="center" width="100%">
             <Card variation="outlined" marginTop="2rem">
               <Heading level={3}>Select Data Source</Heading>
@@ -69,26 +71,31 @@ export default function App() {
               </Flex>
             </Card>
           </Flex>
+          </div>
         )}
 
         {/* ----------- DEVICES VIEW ----------- */}
         {view === 'devices' && (
-          <DevicesView onBack={() => setView('menu')} />
+          <div className="page-conainer">
+            <DevicesView onBack={() => setView('menu')} />
+          </div>
         )}
 
         {/* ----------- SMHI VIEW ----------- */}
         {view === 'smhi' && (
-          <SmhiView onBack={() => setView('menu')} />
+          <div className="page-conainer">
+            <SmhiView onBack={() => setView('menu')} />
+          </div>
         )}
 
-        <Button onClick={signOut} marginTop="2rem">Sign out</Button>
+        <Button variation="primary" onClick={signOut} marginTop="2rem" style={{margin: "0 auto"}}>Sign out</Button>
       </Flex>
     </View>
   );
 }
 
 /* ============================================================
-   DEVICES VIEW (DIN ORIGINALKOD — ORÖRD)
+   DEVICES VIEW
    ============================================================ */
 function DevicesView({ onBack }: { onBack: () => void }) {
 
@@ -139,50 +146,38 @@ function DevicesView({ onBack }: { onBack: () => void }) {
     if (selectedDevice === device_id) setSelectedDevice(null);
   }
 
-  const chartLabels = telemetryData.map(item =>
-    new Date(item.timestamp || 0).toLocaleString('sv-SE', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  );
+    // Om en device är vald, visa telemetri-vyn
+  if (selectedDevice) {
+    return (
+      <View>
+        <Button variation="link" onClick={() => setSelectedDevice(null)} marginBottom="2rem">
+          ← Back
+        </Button>
 
-  const temperatureData = {
-    labels: chartLabels,
-    datasets: [{
-      label: 'Temperature (°C)',
-      data: telemetryData.map(i => i.temperature),
-      borderColor: 'rgb(75,192,192)',
-      backgroundColor: 'rgba(75,192,192,0.2)',
-      tension: 0.1
-    }]
-  };
+        <Card variation="outlined">
+          <Heading level={3}>Telemetry – Device {selectedDevice}</Heading>
+          <Divider marginTop="1rem" marginBottom="1rem"/>
 
-  const humidityData = {
-    labels: chartLabels,
-    datasets: [{
-      label: 'Humidity (%)',
-      data: telemetryData.map(i => i.humidity),
-      borderColor: 'rgb(153,102,255)',
-      backgroundColor: 'rgba(153,102,255,0.2)',
-      tension: 0.1
-    }]
-  };
+          {telemetryData.length > 0 ? (
+            <TelemetryChart data={telemetryData} />
+          ) : (
+            <Text>No telemetry available.</Text>
+          )}
+        </Card>
+      </View>
+    );
+  }
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: "top" as const } }
-  };
-
+  // Annars visa device-listan
   return (
     <View>
-      <Button variation="link" onClick={onBack}>← Back</Button>
+      <Button variation="link" onClick={onBack} marginBottom="1rem">
+        ← Back
+      </Button>
 
       <Heading level={2} marginTop="1rem">Devices</Heading>
 
-      <Card variation="outlined" marginTop="1rem">
+      <Card variation="outlined" marginTop="1rem" width="100%">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading level={3}>Your Devices</Heading>
           <Button onClick={createDevice}>Add Device</Button>
@@ -192,9 +187,7 @@ function DevicesView({ onBack }: { onBack: () => void }) {
 
         <Collection items={devices} type="list" direction="column" gap="1rem">
           {(item, index) => (
-            <Card key={index}
-              variation={selectedDevice === item.device_id ? "elevated" : "outlined"}
-            >
+            <Card key={index} variation="outlined">
               <Flex justifyContent="space-between" alignItems="center">
                 <Flex direction="column">
                   <Text>
@@ -209,18 +202,25 @@ function DevicesView({ onBack }: { onBack: () => void }) {
                 <Flex gap="0.5rem">
                   <Menu
                     trigger={
-                      <MenuButton>
-                        {selectedDevice === item.device_id ? "Selected" : "View Data"}
-                      </MenuButton>
+                      <MenuButton>View Data</MenuButton>
                     }
                   >
-                    <MenuItem onClick={() => { setSelectedDevice(item.device_id); setTimeRange('hour'); }}>
+                    <MenuItem onClick={() => { 
+                      setSelectedDevice(item.device_id); 
+                      setTimeRange('hour'); 
+                    }}>
                       Last Hour
                     </MenuItem>
-                    <MenuItem onClick={() => { setSelectedDevice(item.device_id); setTimeRange('week'); }}>
+                    <MenuItem onClick={() => { 
+                      setSelectedDevice(item.device_id); 
+                      setTimeRange('week'); 
+                    }}>
                       Last Week
                     </MenuItem>
-                    <MenuItem onClick={() => { setSelectedDevice(item.device_id); setTimeRange('all'); }}>
+                    <MenuItem onClick={() => { 
+                      setSelectedDevice(item.device_id); 
+                      setTimeRange('all'); 
+                    }}>
                       All Data
                     </MenuItem>
                   </Menu>
@@ -234,38 +234,61 @@ function DevicesView({ onBack }: { onBack: () => void }) {
           )}
         </Collection>
       </Card>
-
-      {selectedDevice && (
-        <Card variation="outlined" marginTop="2rem">
-          <Heading level={3}>Telemetry – Device {selectedDevice}</Heading>
-          <Divider marginTop="1rem" marginBottom="1rem"/>
-
-          {telemetryData.length > 0 ? (
-            <>
-              <View marginBottom="2rem">
-                <Heading level={5}>Temperature</Heading>
-                <div style={{ height: "300px" }}>
-                  <Line data={temperatureData} options={chartOptions} />
-                </div>
-              </View>
-
-              <View marginBottom="2rem">
-                <Heading level={5}>Humidity</Heading>
-                <div style={{ height: "300px" }}>
-                  <Line data={humidityData} options={chartOptions} />
-                </div>
-              </View>
-            </>
-          ) : (
-            <Text>No telemetry available.</Text>
-          )}
-
-          <Button variation="link" onClick={() => setSelectedDevice(null)}>
-            Back to Devices
-          </Button>
-        </Card>
-      )}
     </View>
+  );
+}
+
+/* ============================================================
+   TELEMETRY CHART
+   ============================================================ */
+function TelemetryChart({ data }: { data: Array<Schema["Telemetry"]["type"]> }) {
+  const chartLabels = data.map(item =>
+    new Date(item.timestamp || 0).toLocaleString('sv-SE', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  );
+
+  const chartData = {
+    labels: chartLabels,
+    datasets: [
+      {
+        label: "Temperature (°C)",
+        data: data.map(i => i.temperature),
+        borderColor: "rgb(75,192,192)",
+        tension: 0.1,
+      },
+      {
+        label: "Humidity (%)",
+        data: data.map(i => i.humidity),
+        borderColor: "rgb(153,102,255)",
+        tension: 0.1,
+      },
+      {
+        label: "Light (%)",
+        data: data.map(i => i.light),
+        borderColor: "rgba(253, 100, 12, 1)",
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { 
+      legend: { 
+        position: "top" as const 
+      } 
+    }
+  };
+
+  return (
+    <div style={{ height: "350px" }}>
+      <Line data={chartData} options={chartOptions} />
+    </div>
   );
 }
 
@@ -307,7 +330,6 @@ function WindDirectionCompass({ direction }: { direction: number }) {
 function SmhiView({ onBack }: { onBack: () => void }) {
   const [stationId, setStationId] = useState('99280');
   const [smhiData, setSmhiData] = useState<Array<Schema["SMHI"]["type"]>>([]);
-  const [timeRange, setTimeRange] = useState<'hour' | 'week' | 'all'>('all');
   const [loading, setLoading] = useState(false);
   const [latestData, setLatestData] = useState<Schema["SMHI"]["type"] | null>(null);
 
@@ -347,14 +369,7 @@ function SmhiView({ onBack }: { onBack: () => void }) {
         (a.timestamp || 0) - (b.timestamp || 0)
       );
 
-      const now = Date.now();
       let filtered = sortedData;
-
-      if (timeRange === 'hour') {
-        filtered = sortedData.filter(i => (i.timestamp || 0) >= now - 3600000);
-      } else if (timeRange === 'week') {
-        filtered = sortedData.filter(i => (i.timestamp || 0) >= now - 7 * 86400000);
-      }
 
       console.log("Filtered data:", filtered);
       setSmhiData(filtered);
@@ -439,26 +454,16 @@ function SmhiView({ onBack }: { onBack: () => void }) {
 
       <Heading level={2} marginTop="1rem">SMHI Weather Station</Heading>
 
-      <Card variation="outlined" marginTop="1rem">
+      <Card variation="outlined" marginTop="1rem" width="100%">
         <Flex direction="column" gap="1rem">
+          <Heading level={4}>Station ID (e.g., 99280 for Svenska Högarna)</Heading>
           <TextField 
-            label="Station ID (e.g., 99280 for Svenska Högarna)"
+            label=""
             value={stationId}
             onChange={(e) => setStationId(e.target.value)}
           />
 
           <Flex gap="1rem">
-            <Menu
-              trigger={
-                <MenuButton isDisabled={!stationId}>
-                  {timeRange === 'hour' ? 'Last Hour' : timeRange === 'week' ? 'Last Week' : 'All Data'}
-                </MenuButton>
-              }
-            >
-              <MenuItem onClick={() => setTimeRange('hour')}>Last Hour</MenuItem>
-              <MenuItem onClick={() => setTimeRange('week')}>Last Week</MenuItem>
-              <MenuItem onClick={() => setTimeRange('all')}>All Data</MenuItem>
-            </Menu>
 
             <Button 
               isDisabled={!stationId} 
@@ -473,7 +478,8 @@ function SmhiView({ onBack }: { onBack: () => void }) {
 
       {/* Senaste mätningen - Översikt */}
       {latestData && (
-        <Card variation="outlined" marginTop="2rem">
+        
+        <Card variation="outlined" marginTop="14rem">
           <Heading level={3}>Current Conditions</Heading>
           <Divider marginTop="1rem" marginBottom="1rem"/>
           

@@ -5,6 +5,7 @@
 }
 
 .App {
+  /* bakgrundsbild*/
   background-image: url('./assets/backgroundpicture.jpg');
   background-size: cover;
   background-position: center;
@@ -12,6 +13,31 @@
   background-repeat: no-repeat;
   min-height: 100vh;
   padding: 2rem;
+
+
+  /* layout */
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  /* Spacing */
+  padding: 3rem, 2rem, 5rem, 2rem;
+
+  overflow-x: hidden;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 800px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  margin: 0 auto;
 }
 
 .logo {
@@ -42,10 +68,20 @@
   }
 }
 
-.card {
-  padding: 2em;
+/* Responsiv design */
+@media (max-width: 768px) {
+  .page-container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .App {
+    padding: 2rem 1rem 3rem 1rem;
+  }
+  
+  .wind-compass {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
 }
 
-.read-the-docs {
-  color: #888;
-}

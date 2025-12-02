@@ -192,8 +192,8 @@ function DevicesView({ onBack }: { onBack: () => void }) {
                 <Flex direction="column">
                   <Text>
                     <strong>Status:</strong>{" "}
-                    <Badge variation={item?.status === "online" ? "success" : "warning"}>
-                      {item?.status}
+                    <Badge variation={(item?.status === "connected") ? "success" : "error"} key={item.device_id}>
+                      {item?.status ? item?.status.charAt(0).toUpperCase() + String(item?.status).slice(1) : ""}
                     </Badge>
                   </Text>
                   <Text><strong>ID:</strong> {item.device_id}</Text>

@@ -76,16 +76,16 @@ export default function App() {
 
         {/* ----------- DEVICES VIEW ----------- */}
         {view === 'devices' && (
-          <div className="page-conainer">
+          //<div className="page-container">
             <DevicesView onBack={() => setView('menu')} />
-          </div>
+          //</div>
         )}
 
         {/* ----------- SMHI VIEW ----------- */}
         {view === 'smhi' && (
-          <div className="page-conainer">
+          //<div className="page-container">
             <SmhiView onBack={() => setView('menu')} />
-          </div>
+          //</div>
         )}
 
         <Button variation="primary" onClick={signOut} marginTop="2rem" style={{margin: "0 auto"}}>Sign out</Button>
@@ -149,9 +149,10 @@ function DevicesView({ onBack }: { onBack: () => void }) {
   if (selectedDevice) {
     return (
       <View>
-        <Button variation="link" onClick={() => setSelectedDevice(null)} marginTop= "5rem" marginBottom="3rem">
+        <Button variation="link" onClick={() => setSelectedDevice(null)} marginBottom="1rem">
           ← Back
         </Button>
+        <div className="page-container-tables">
         <Card variation="outlined" marginTop="1rem">
           <Heading level={3}>Telemetry – Device {selectedDevice}</Heading>
           <Divider marginTop="1rem" marginBottom="1rem"/>
@@ -162,6 +163,7 @@ function DevicesView({ onBack }: { onBack: () => void }) {
             <Text>No telemetry available.</Text>
           )}
         </Card>
+        </div>
       </View>
     );
   }
@@ -174,6 +176,7 @@ function DevicesView({ onBack }: { onBack: () => void }) {
 
       <Heading level={2} marginTop="1rem">Devices</Heading>
 
+      <div className="page-container">
       <Card variation="outlined" marginTop="1rem" width="100%">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading level={3}>Your Devices</Heading>
@@ -231,6 +234,7 @@ function DevicesView({ onBack }: { onBack: () => void }) {
           )}
         </Collection>
       </Card>
+      </div>
     </View>
   );
 }
@@ -473,7 +477,7 @@ function SmhiView({ onBack }: { onBack: () => void }) {
       {/* Senaste mätningen - Översikt */}
       {latestData && (
         
-        <Card variation="outlined" marginTop="14rem">
+        <Card variation="outlined" marginTop="10rem">
           <Heading level={3}>Current Conditions</Heading>
           <Divider marginTop="1rem" marginBottom="1rem"/>
           

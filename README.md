@@ -81,16 +81,10 @@ All traffic is encrypted end-to-end.
 ## Scalability
 
 This system is built to scale horizontally:
-Users
------
-- You can onboard unlimited users.
-  Amplify manages authentication and per-user data ownership automatically.
-Weather Stations
-----------------
-- The SMHI integration can easily be extended to collect data from multiple stations and allow users to choose which station to view.
-Devices
-----------
-- New IoT devices can be added in IoT Core and linked to new or existing users, each with its own telemetry.
+-------------------------------------------
+Users - You can onboard unlimited users. Amplify manages authentication and per-user data ownership automatically.
+Wetahter Stations - The SMHI integration can easily be extended to collect data from multiple stations and allow users to choose which station to view.
+Devices - New IoT devices can be added in IoT Core and linked to new or existing users, each with its own telemetry.
 
 ## Images
 

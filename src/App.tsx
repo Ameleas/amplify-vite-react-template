@@ -318,8 +318,23 @@ function WindDirectionCompass({ direction }: { direction: number }) {
         borderRight: "2px solid transparent",
         borderBottom: "80px solid red",
         position: "absolute",
-        transform: `rotate(${direction}deg)`,
-      }} />
+        transform: `rotate(${direction + 180}deg)`,
+      }} >
+       <div
+          style={{
+            position: "absolute",
+            //top: "5px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 0,
+            height: 0,
+            borderLeft: "5px solid transparent",
+            borderRight: "5px solid transparent",
+            borderBottom: "9px solid #cc0000",
+          }}
+        />
+      </div>
+      
       <div style={{ position: "absolute", bottom: 4, fontSize: 12 }}>S</div>
       <div style={{ position: "absolute", top: 4, fontSize: 12 }}>N</div>
       <div style={{ position: "absolute", left: 4, fontSize: 12 }}>W</div>
@@ -561,7 +576,7 @@ function SmhiView({ onBack }: { onBack: () => void }) {
           <View style={{ flex: 1 }}>
             {latestData && (
               <>
-                <Heading level={5}>Wind Direction</Heading>
+                <Heading level={5} marginBottom= "2rem">Wind Direction</Heading>
                 <WindDirectionCompass direction={latestData.wind_direction || 0} />
               </>
             )}

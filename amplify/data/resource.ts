@@ -56,7 +56,7 @@ const schema = a.schema({
       wind_speed: a.float(),
       wind_gust_max: a.float(),
       visibility: a.float(),
-      owner: a.string().required()
+      owner: a.string()
     })
     .identifier(['device_id', 'timestamp'])
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),

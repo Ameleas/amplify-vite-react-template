@@ -562,7 +562,7 @@ function SmhiView({ onBack }: { onBack: () => void }) {
 
           <Divider marginTop="2rem" marginBottom="1rem"/>
 
-          <Flex direction="row" gap="2rem" alignItems="center" wrap="wrap">
+          <Flex direction="row" alignItems="center" wrap="wrap">
 
           {/* Vind */}
           <View style={{ flex: 3, minWidth: "400px" }}>

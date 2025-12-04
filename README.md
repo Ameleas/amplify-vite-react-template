@@ -10,6 +10,7 @@ As a long-time sailor, I also integrated real-time weather readings from SMHI (t
 Weather data from the lighthouse station Svenska Högarna is fetched through SMHI’s REST API and displayed in a dedicated view.
 
 This project serves as a full IoT pipeline demonstration: edge device → cloud ingestion → database → serverless processing → frontend visualization.
+A practical use case is onboard merchant vessels, where both indoor and outdoor conditions must be monitored closely. Some cargo types are sensitive to environmental or meteorological variations, and continuous monitoring helps ensure proper handling and safety.
 
 ## Hardware
 
